@@ -61,13 +61,13 @@ def create_new_sandbox(sandbox: SandboxCreate, db: Session = Depends(get_db)):
         name=sandbox.name,
         status=sandbox_response["status"],
         created_at=datetime.utcnow(),
-        expiry_time=datetime.utcnow() + timedelta(minutes=1),
+        expiry_time=datetime.utcnow() + timedelta(minutes=15),
         stack_id=sandbox_response["stack_id"],
     )
     db.add(new_sandbox)
     db.commit()
     # db.refresh(new_sandbox)
-    delay_minutes = 1
+    delay_minutes = 15
     schedule_task(terminate_sandbox_task, delay_minutes, sandbox.name)
     return new_sandbox
 
