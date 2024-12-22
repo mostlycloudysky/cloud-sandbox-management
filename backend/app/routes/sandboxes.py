@@ -5,7 +5,7 @@ from app.aws_sandbox import create_sandbox, terminate_sandbox
 from app.models import Sandbox
 from app.database import get_db
 from pydantic import BaseModel
-from app.scheduler import schedule_task
+from app.scheduler import schedule_task, scheduler
 
 router = APIRouter()
 
@@ -26,6 +26,7 @@ def terminate_sandbox_task(sandbox_name: str):
     """
     Task to terminate a sandbox environment.
     """
+    print(f"Executing termination task for sandbox '{sandbox_name}'")
     from app.database import get_db  # Avoid circular imports
 
     db = next(get_db())
@@ -65,8 +66,9 @@ def create_new_sandbox(sandbox: SandboxCreate, db: Session = Depends(get_db)):
     )
     db.add(new_sandbox)
     db.commit()
-    db.refresh(new_sandbox)
-    schedule_task(terminate_sandbox_task, delay_minutes=15, sandbox_name=sandbox.name)
+    # db.refresh(new_sandbox)
+    delay_minutes = 15
+    schedule_task(terminate_sandbox_task, delay_minutes, sandbox.name)
     return new_sandbox
 
 
@@ -97,3 +99,9 @@ def delete_sandbox(name: str, db: Session = Depends(get_db)):
         sandbox.status = "TERMINATED"
         db.commit()
     return {"message": f"Sandbox {name} terminated"}
+
+
+@router.get("/jobs")
+def list_jobs():
+    jobs = scheduler.get_jobs()
+    return [{"id": job.id, "next_run_time": job.next_run_time} for job in jobs]
