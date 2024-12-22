@@ -6,7 +6,7 @@ on:
       - master
 env:
   AWS_REGION: us-east-1
-  ECR_REPOSITORY: cloudysetup
+  ECR_REPOSITORY: sandbox
 
 jobs:
   deploy:
