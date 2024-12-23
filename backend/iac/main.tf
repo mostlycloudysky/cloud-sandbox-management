@@ -233,7 +233,7 @@ resource "aws_iam_role_policy_attachment" "ecs_execution_role_policy_attach" {
   policy_arn = "arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy"
 }
 
-data "aws_iam_policy_document" "ecs_task_role_policy_attach_sm" {
+data "aws_iam_policy_document" "ecs_execution_role_policy_attach_sm" {
   statement {
     actions = [
       "secretsmanager:GetSecretValue",
@@ -247,10 +247,10 @@ data "aws_iam_policy_document" "ecs_task_role_policy_attach_sm" {
   }
 }
 
-resource "aws_iam_role_policy" "ecs_task_role_policy_sm" {
-  name   = "ecs-task-role-policy-sm"
-  role   = aws_iam_role.ecs_task_role.id
-  policy = data.aws_iam_policy_document.ecs_task_role_policy_attach_sm.json
+resource "aws_iam_role_policy" "ecs_execution_role_policy_sm" {
+  name   = "ecs-execution-role-policy-sm"
+  role   = aws_iam_role.ecs_execution_role.id
+  policy = data.aws_iam_policy_document.ecs_execution_role_policy_attach_sm.json
 }
 
 # ALB & Security Groups
