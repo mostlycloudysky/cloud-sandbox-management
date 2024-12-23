@@ -50,7 +50,7 @@ def terminate_sandbox_task(sandbox_name: str):
         print(f"Sandbox '{sandbox_name}' not found or already terminated.")
 
 
-@router.get("/")
+@router.get("/", include_in_schema=True)
 def read_root():
     return {"message": "Welcome to the sandbox service"}
 
@@ -64,7 +64,11 @@ def get_sandboxes(user: dict = Depends(validate_user)):
 
 
 @router.post("/sandboxes", response_model=SandboxResponse)
-def create_new_sandbox(sandbox: SandboxCreate, db: Session = Depends(get_db)):
+def create_new_sandbox(
+    sandbox: SandboxCreate,
+    db: Session = Depends(get_db),
+    user: dict = Depends(validate_user),
+):
     """
     Create a new sandbox
     """
@@ -87,7 +91,7 @@ def create_new_sandbox(sandbox: SandboxCreate, db: Session = Depends(get_db)):
 
 
 @router.get("/sandboxes")
-def list_sandboxes(db: Session = Depends(get_db)):
+def list_sandboxes(db: Session = Depends(get_db), user: dict = Depends(validate_user)):
     """
     List all sandboxes.
     """
@@ -103,7 +107,9 @@ def list_sandboxes(db: Session = Depends(get_db)):
 
 
 @router.delete("/sandboxes/{name}")
-def delete_sandbox(name: str, db: Session = Depends(get_db)):
+def delete_sandbox(
+    name: str, db: Session = Depends(get_db), user: dict = Depends(validate_user)
+):
     """
     Terminate a sandbox environment.
     """
@@ -116,6 +122,6 @@ def delete_sandbox(name: str, db: Session = Depends(get_db)):
 
 
 @router.get("/jobs")
-def list_jobs():
+def list_jobs(user: dict = Depends(validate_user)):
     jobs = scheduler.get_jobs()
     return [{"id": job.id, "next_run_time": job.next_run_time} for job in jobs]
