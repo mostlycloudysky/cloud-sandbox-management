@@ -84,6 +84,20 @@ resource "aws_ecs_task_definition" "sandbox_task" {
           "value": "5432"
         }
       ],
+      "secrets": [
+        {
+          "name": "GOOGLE_CLIENT_ID",
+          "valueFrom": "arn:aws:secretsmanager:us-east-1:273509275056:secret:google_client_id-ZqrjPm"
+        },
+        {
+          "name": "GOOGLE_CLIENT_SECRET",
+          "valueFrom": "arn:aws:secretsmanager:us-east-1:273509275056:secret:GOOGLE_CLIENT_SECRET-6Y9PsM"
+        },
+        {
+          "name": "SESSION_SECRET_KEY",
+          "valueFrom": "arn:aws:secretsmanager:us-east-1:273509275056:secret:SESSION_SECRET_KEY-tcSf7N"
+        }
+      ],
       "logConfiguration": {
         "logDriver": "awslogs",
         "options": {
@@ -217,6 +231,26 @@ resource "aws_iam_role_policy_attachment" "ecs_task_role_policy_attach_cf" {
 resource "aws_iam_role_policy_attachment" "ecs_execution_role_policy_attach" {
   role       = aws_iam_role.ecs_execution_role.name
   policy_arn = "arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy"
+}
+
+data "aws_iam_policy_document" "ecs_task_role_policy_attach_sm" {
+  statement {
+    actions = [
+      "secretsmanager:GetSecretValue",
+      "secretsmanager:DescribeSecret"
+    ]
+    resources = [
+      "arn:aws:secretsmanager:us-east-1:273509275056:secret:google_client_id-ZqrjPm",
+      "arn:aws:secretsmanager:us-east-1:273509275056:secret:GOOGLE_CLIENT_SECRET-6Y9PsM",
+      "arn:aws:secretsmanager:us-east-1:273509275056:secret:SESSION_SECRET_KEY-tcSf7N"
+    ]
+  }
+}
+
+resource "aws_iam_role_policy" "ecs_task_role_policy_sm" {
+  name   = "ecs-task-role-policy-sm"
+  role   = aws_iam_role.ecs_task_role.id
+  policy = data.aws_iam_policy_document.ecs_task_role_policy_attach_sm.json
 }
 
 # ALB & Security Groups
