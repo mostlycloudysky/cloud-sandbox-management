@@ -78,6 +78,10 @@ resource "aws_ecs_task_definition" "sandbox_task" {
         {
           "name": "DB_HOSTNAME",
           "value": "2iabtwondlw2bni7uxse6lobte.dsql.us-east-1.on.aws"
+        },
+        {
+          "name": "DB_PORT",
+          "value": "5432"
         }
       ],
       "logConfiguration": {

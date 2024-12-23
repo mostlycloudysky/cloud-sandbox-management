@@ -49,6 +49,11 @@ def terminate_sandbox_task(sandbox_name: str):
         print(f"Sandbox '{sandbox_name}' not found or already terminated.")
 
 
+@router.get("/")
+def read_root():
+    return {"message": "Welcome to the sandbox service"}
+
+
 @router.post("/sandboxes", response_model=SandboxResponse)
 def create_new_sandbox(sandbox: SandboxCreate, db: Session = Depends(get_db)):
     """
