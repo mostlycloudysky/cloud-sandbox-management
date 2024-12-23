@@ -63,6 +63,8 @@ __pycache__/
 # Optional REPL history
 .node_repl_history
 
+.terraform
+.terraform.lock.hcl
 # Output of 'npm pack'
 *.tgz
 
