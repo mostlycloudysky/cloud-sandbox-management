@@ -6,6 +6,7 @@ from app.models import Sandbox
 from app.database import get_db
 from pydantic import BaseModel
 from app.scheduler import schedule_task, scheduler
+from app.routes.google_auth import validate_user
 
 router = APIRouter()
 
@@ -52,6 +53,14 @@ def terminate_sandbox_task(sandbox_name: str):
 @router.get("/")
 def read_root():
     return {"message": "Welcome to the sandbox service"}
+
+
+@router.get("/test")
+def get_sandboxes(user: dict = Depends(validate_user)):
+    """
+    Get a list of sandboxes. Protected by Google OAuth authentication.
+    """
+    return {"message": "Here are your sandboxes!", "user": user}
 
 
 @router.post("/sandboxes", response_model=SandboxResponse)
