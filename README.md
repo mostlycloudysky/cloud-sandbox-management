@@ -19,6 +19,9 @@ The API allows users to:
 
 ---
 
+## Backend Service Architecture
+![Sandbox Architecture](sandbox.png)
+
 ## Features
 
 - **Authentication**:
